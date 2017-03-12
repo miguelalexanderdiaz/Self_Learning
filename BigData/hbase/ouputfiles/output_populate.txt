@@ -1,0 +1,144 @@
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.2.3, rbd63744624a26dc3350137b564fe746df7a721a4, Mon Aug 29 15:13:42 PDT 2016
+
+#dates handler
+import java.util.Date
+Java::JavaUtil::Date
+Date.new().toString()
+"Mon Sep 19 17:02:26 COT 2016"
+
+#create table
+create 'twitter_followers', {NAME => 'status', VERSIONS => 20}, {NAME => 'payload', VERSIONS => 20}
+0 row(s) in 1.3720 seconds
+
+Hbase::Table - twitter_followers
+
+#populate examples
+put 'twitter_followers', '1,2', 'status:date', Date.new().toString()
+0 row(s) in 0.0700 seconds
+
+put 'twitter_followers', '1,2', 'status:is_following', 'True'
+0 row(s) in 0.0020 seconds
+
+
+put 'twitter_followers', '1,3', 'status:date', Date.new().toString() 
+0 row(s) in 0.0010 seconds
+
+put 'twitter_followers', '1,3', 'status:is_following', 'True'
+0 row(s) in 0.0020 seconds
+
+
+put 'twitter_followers', '2,3', 'status:date', Date.new().toString() 
+0 row(s) in 0.0020 seconds
+
+put 'twitter_followers', '2,3', 'status:is_following', 'True'
+0 row(s) in 0.0020 seconds
+
+
+put 'twitter_followers', '1,4', 'status:date', Date.new().toString() 
+0 row(s) in 0.0020 seconds
+
+put 'twitter_followers', '1,4', 'status:is_following', 'True'
+0 row(s) in 0.0020 seconds
+
+
+put 'twitter_followers', '3,1', 'status:date', Date.new().toString() 
+0 row(s) in 0.0020 seconds
+
+put 'twitter_followers', '3,1', 'status:is_following', 'True'
+0 row(s) in 0.0010 seconds
+
+
+put 'twitter_followers', '4,3', 'status:date', Date.new().toString() 
+0 row(s) in 0.0010 seconds
+
+put 'twitter_followers', '4,3', 'status:is_following', 'True'
+0 row(s) in 0.0010 seconds
+
+
+put 'twitter_followers', '4,2', 'status:date', Date.new().toString() 
+0 row(s) in 0.0020 seconds
+
+put 'twitter_followers', '4,2', 'status:is_following', 'True'
+0 row(s) in 0.0020 seconds
+
+
+
+#list all examples
+scan 'twitter_followers'
+ROW  COLUMN+CELL
+ 1,2 column=status:date, timestamp=1474322547901, value=Mon Sep 19 17:02:27 COT 2016
+ 1,2 column=status:is_following, timestamp=1474322547911, value=True
+ 1,3 column=status:date, timestamp=1474322547918, value=Mon Sep 19 17:02:27 COT 2016
+ 1,3 column=status:is_following, timestamp=1474322547923, value=True
+ 1,4 column=status:date, timestamp=1474322547941, value=Mon Sep 19 17:02:27 COT 2016
+ 1,4 column=status:is_following, timestamp=1474322547947, value=True
+ 2,3 column=status:date, timestamp=1474322547928, value=Mon Sep 19 17:02:27 COT 2016
+ 2,3 column=status:is_following, timestamp=1474322547935, value=True
+ 3,1 column=status:date, timestamp=1474322547952, value=Mon Sep 19 17:02:27 COT 2016
+ 3,1 column=status:is_following, timestamp=1474322547957, value=True
+ 4,2 column=status:date, timestamp=1474322547980, value=Mon Sep 19 17:02:27 COT 2016
+ 4,2 column=status:is_following, timestamp=1474322547988, value=True
+ 4,3 column=status:date, timestamp=1474322547969, value=Mon Sep 19 17:02:27 COT 2016
+ 4,3 column=status:is_following, timestamp=1474322547973, value=True
+7 row(s) in 0.0170 seconds
+
+
+#user 1 unfollow user 4
+put 'twitter_followers', '1,4', 'status:is_following', 'False'
+0 row(s) in 0.0020 seconds
+
+scan 'twitter_followers', {COLUMN => 'status:is_following'}
+ROW  COLUMN+CELL
+ 1,2 column=status:is_following, timestamp=1474322547911, value=True
+ 1,3 column=status:is_following, timestamp=1474322547923, value=True
+ 1,4 column=status:is_following, timestamp=1474322548015, value=False
+ 2,3 column=status:is_following, timestamp=1474322547935, value=True
+ 3,1 column=status:is_following, timestamp=1474322547957, value=True
+ 4,2 column=status:is_following, timestamp=1474322547988, value=True
+ 4,3 column=status:is_following, timestamp=1474322547973, value=True
+7 row(s) in 0.0110 seconds
+
+
+#optional: user 1 unfollow user 4 (removing entirely the entry)
+deleteall 'twitter_followers', '1,4'
+0 row(s) in 0.0100 seconds
+
+scan 'twitter_followers', {COLUMN => 'status:is_following'}
+ROW  COLUMN+CELL
+ 1,2 column=status:is_following, timestamp=1474322547911, value=True
+ 1,3 column=status:is_following, timestamp=1474322547923, value=True
+ 2,3 column=status:is_following, timestamp=1474322547935, value=True
+ 3,1 column=status:is_following, timestamp=1474322547957, value=True
+ 4,2 column=status:is_following, timestamp=1474322547988, value=True
+ 4,3 column=status:is_following, timestamp=1474322547973, value=True
+6 row(s) in 0.0100 seconds
+
+
+#list users that follows user 1
+scan 'twitter_followers', {FILTER => "PrefixFilter ('1,')"}
+ROW  COLUMN+CELL
+ 1,2 column=status:date, timestamp=1474322547901, value=Mon Sep 19 17:02:27 COT 2016
+ 1,2 column=status:is_following, timestamp=1474322547911, value=True
+ 1,3 column=status:date, timestamp=1474322547918, value=Mon Sep 19 17:02:27 COT 2016
+ 1,3 column=status:is_following, timestamp=1474322547923, value=True
+2 row(s) in 0.0310 seconds
+
+
+#user 3 is following user 1?
+get 'twitter_followers', '3,1', 'status:is_following'
+COLUMN  CELL
+ status:is_following timestamp=1474322547957, value=True
+1 row(s) in 0.0260 seconds
+
+
+#list every user that follows user 2
+scan 'twitter_followers', {COLUMN => 'status:is_following', FILTER => "(RowFilter (=,'regexstring:.*,2') AND ValueFilter( =, 'binary:True'))"}
+ROW  COLUMN+CELL
+ 1,2 column=status:is_following, timestamp=1474322547911, value=True
+ 4,2 column=status:is_following, timestamp=1474322547988, value=True
+2 row(s) in 0.0230 seconds
+
+
+

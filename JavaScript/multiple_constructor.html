@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+	<title></title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script type="text/javascript">
+		function Complex(){
+			if (arguments.length==2){
+				this._real=arguments[0];
+				this._complex=arguments[1];
+			}
+			else{
+				this._real=0;
+				this._complex=0;
+			}
+		};
+		Complex.prototype.show=function(){
+			if(this._complex>=0){
+				document.write(this._real+" + "+this._complex+"i"+"<br>");
+			}
+			else{
+				document.write(this._real+" - "+this._complex+"i"+"<br>");
+			}
+		};
+
+		Complex.prototype.setValues=function(real,complex){
+
+			this._real=real;
+			this._complex=complex;
+			console.log('some');
+			
+	
+		};
+
+
+		var number=new Complex();
+		number.show();
+		number=new Complex(10,20);
+		number.show();
+	
+		
+
+	</script>
+</head>
+<body>
+
+
+
+	
+
+</body>
+</html>

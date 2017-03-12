@@ -1,0 +1,51 @@
+#dates handler
+import java.util.Date
+Date.new().toString()
+
+#create table
+create 'twitter_followers', {NAME => 'status', VERSIONS => 20}, {NAME => 'payload', VERSIONS => 20}
+
+#populate examples
+put 'twitter_followers', '1,2', 'status:date', Date.new().toString()
+put 'twitter_followers', '1,2', 'status:is_following', 'True'
+
+put 'twitter_followers', '1,3', 'status:date', Date.new().toString() 
+put 'twitter_followers', '1,3', 'status:is_following', 'True'
+
+put 'twitter_followers', '2,3', 'status:date', Date.new().toString() 
+put 'twitter_followers', '2,3', 'status:is_following', 'True'
+
+put 'twitter_followers', '1,4', 'status:date', Date.new().toString() 
+put 'twitter_followers', '1,4', 'status:is_following', 'True'
+
+put 'twitter_followers', '3,1', 'status:date', Date.new().toString() 
+put 'twitter_followers', '3,1', 'status:is_following', 'True'
+
+put 'twitter_followers', '4,3', 'status:date', Date.new().toString() 
+put 'twitter_followers', '4,3', 'status:is_following', 'True'
+
+put 'twitter_followers', '4,2', 'status:date', Date.new().toString() 
+put 'twitter_followers', '4,2', 'status:is_following', 'True'
+
+
+#list all examples
+scan 'twitter_followers'
+
+#user 1 unfollow user 4
+put 'twitter_followers', '1,4', 'status:is_following', 'False'
+scan 'twitter_followers', {COLUMN => 'status:is_following'}
+
+#optional: user 1 unfollow user 4 (removing entirely the entry)
+deleteall 'twitter_followers', '1,4'
+scan 'twitter_followers', {COLUMN => 'status:is_following'}
+
+#list users that follows user 1
+scan 'twitter_followers', {FILTER => "PrefixFilter ('1,')"}
+
+#user 3 is following user 1?
+get 'twitter_followers', '3,1', 'status:is_following'
+
+#list every user that follows user 2
+scan 'twitter_followers', {COLUMN => 'status:is_following', FILTER => "(RowFilter (=,'regexstring:.*,2') AND ValueFilter( =, 'binary:True'))"}
+
+
